@@ -14,4 +14,4 @@ EDA_DIR = ANALYSIS_DIR / f"eda_analysis_v{CLEANED_VERSION}"
 
 # Performance
 NUM_WORKERS = min(64, cpu_count() - 1)
-SAMPLE_SIZE = 10000 # None  # Set to integer to analyze subset
+SAMPLE_SIZE = 1000 # None  # Set to integer to analyze subset

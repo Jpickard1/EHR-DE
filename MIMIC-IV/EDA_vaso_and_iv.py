@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 MIMIC-IV Vasopressor and IV Fluid Analysis
 ===========================================
@@ -24,6 +23,7 @@ from scipy import stats
 warnings.filterwarnings('ignore')
 
 from clinical_constants import VASOPRESSORS, IV_FLUIDS
+from utils import identify_sepsis_bool
 
 # ============================================================================
 # CONFIGURATION
@@ -99,7 +99,7 @@ def extract_patient_medications(patient_file: Path) -> dict:
             data = json.load(f)
         
         subject_id = data.get('subject_id')
-        has_sepsis = identify_sepsis(data)
+        has_sepsis = identify_sepsis_bool(data)
         
         records = data.get('records', [])
         if not isinstance(records, list):
@@ -210,57 +210,6 @@ def extract_dose_from_rate(rate_str: str, rate_uom: str = None) -> dict:
         pass
     
     return result
-
-# ============================================================================
-# SEPSIS IDENTIFICATION (from previous script)
-# ============================================================================
-
-SEPSIS_ICD10_CODES = {
-    'A40', 'A400', 'A401', 'A403', 'A408', 'A409',
-    'A41', 'A410', 'A411', 'A412', 'A413', 'A414', 'A415', 'A4150', 'A4151', 'A4152', 'A4153', 'A4159',
-    'A418', 'A4181', 'A4189', 'A419',
-    'R6520', 'R6521',
-    'T8111', 'T8112',
-    'A499', 'R780', 'R7881',
-}
-
-SEPSIS_ICD9_CODES = {
-    '038', '0380', '0381', '03810', '03811', '03812', '03819',
-    '0382', '0383', '0384', '03840', '03841', '03842', '03843', '03844', '03849',
-    '0388', '0389',
-    '99591', '99592',
-    '78552',
-}
-
-def identify_sepsis(patient_data: dict) -> bool:
-    """Quick sepsis identification."""
-    records = patient_data.get('records', [])
-    if not isinstance(records, list):
-        return False
-    
-    for record in records:
-        if not isinstance(record, dict):
-            continue
-        if record.get('data_type') == 'diagnoses':
-            icd_code = record.get('icd_code', '')
-            icd_version = record.get('icd_version', 10)
-            
-            if icd_version == 10:
-                for sepsis_code in SEPSIS_ICD10_CODES:
-                    if icd_code.startswith(sepsis_code):
-                        return True
-            elif icd_version == 9:
-                for sepsis_code in SEPSIS_ICD9_CODES:
-                    if icd_code.startswith(sepsis_code):
-                        return True
-    
-    return False
-
-# ============================================================================
-# MEDICATION EXTRACTION
-# ============================================================================
-
-
 
 # ============================================================================
 # ANALYSIS FUNCTIONS
