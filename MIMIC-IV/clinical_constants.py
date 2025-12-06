@@ -79,3 +79,182 @@ STEROIDS = {
     'prednisolone': ['prednisolone'],
     'fludrocortisone': ['fludrocortisone', 'florinef'],
 }
+
+
+"""
+Minimal ICD Code Verification for MIMIC-IV
+Verifies that ICD codes match their expected descriptions
+"""
+
+import pandas as pd
+from pathlib import Path
+from typing import Dict, Set, List
+
+
+
+#!/usr/bin/env python3
+"""
+Minimal ICD Code Verification for MIMIC-IV
+Verifies that ICD codes match their expected descriptions
+"""
+
+import pandas as pd
+from pathlib import Path
+from typing import Dict, Set, List
+
+# ============================================================================
+# VERIFICATION FUNCTIONS
+# ============================================================================
+
+def load_icd_dictionaries(mimic_data_dir: str) -> Dict[str, pd.DataFrame]:
+    """Load ICD diagnosis dictionaries from MIMIC-IV."""
+    mimic_path = Path(mimic_data_dir)
+    dicts = {}
+    
+    # Load ICD-10 diagnoses
+    icd10_path = mimic_path / 'hosp' / 'd_icd_diagnoses.csv.gz'
+    if icd10_path.exists():
+        df = pd.read_csv(icd10_path, compression='gzip')
+        dicts['icd10'] = df[df['icd_version'] == 10]
+        dicts['icd9'] = df[df['icd_version'] == 9]
+        print(f"✓ Loaded {len(dicts['icd10'])} ICD-10 codes")
+        print(f"✓ Loaded {len(dicts['icd9'])} ICD-9 codes")
+    else:
+        print(f"✗ Dictionary not found at {icd10_path}")
+        return {}
+    
+    return dicts
+
+
+def verify_icd_codes(codes: Set[str], 
+                     icd_df: pd.DataFrame, 
+                     version: str,
+                     category: str = "") -> pd.DataFrame:
+    """
+    Verify ICD codes exist and show their descriptions.
+    
+    Args:
+        codes: Set of ICD codes to verify
+        icd_df: DataFrame from d_icd_diagnoses.csv.gz
+        version: 'ICD-9' or 'ICD-10'
+        category: Optional category label (e.g., 'Sepsis', 'Respiratory')
+    """
+    results = []
+    
+    print(f"\n{'='*80}")
+    print(f"{category.upper()} - {version}" if category else version)
+    print(f"{'='*80}")
+    
+    for code in sorted(codes):
+        # Try exact match first
+        match = icd_df[icd_df['icd_code'] == code]
+        
+        # If no exact match, try without dots (ICD-10 can have dots)
+        if len(match) == 0:
+            code_nodot = code.replace('.', '')
+            match = icd_df[icd_df['icd_code'] == code_nodot]
+        
+        if len(match) > 0:
+            desc = match.iloc[0]['long_title']
+            results.append({
+                'code': code,
+                'found': True,
+                'description': desc
+            })
+            print(f"✓ {code:8s} {desc}")
+        else:
+            results.append({
+                'code': code,
+                'found': False,
+                'description': 'NOT FOUND'
+            })
+            print(f"✗ {code:8s} NOT FOUND IN MIMIC DICTIONARY")
+    
+    df_results = pd.DataFrame(results)
+    found_count = df_results['found'].sum()
+    total_count = len(df_results)
+    
+    print(f"\nSummary: {found_count}/{total_count} codes verified")
+    
+    return df_results
+
+
+def verify_all_codes(mimic_data_dir: str) -> Dict[str, pd.DataFrame]:
+    """Main verification function."""
+    
+    print("="*80)
+    print("ICD CODE VERIFICATION FOR SEPSIS IDENTIFICATION")
+    print("="*80)
+    
+    # Load dictionaries
+    dicts = load_icd_dictionaries(mimic_data_dir)
+    if not dicts:
+        print("\n⚠️  ERROR: Could not load ICD dictionaries!")
+        return {}
+    
+    results = {}
+    
+    # Verify ICD-10 sepsis codes
+    results['sepsis_icd10'] = verify_icd_codes(
+        SEPSIS_ICD10_CODES,
+        dicts['icd10'],
+        'ICD-10',
+        'SEPSIS CODES'
+    )
+    
+    # Verify ICD-9 sepsis codes
+    results['sepsis_icd9'] = verify_icd_codes(
+        SEPSIS_ICD9_CODES,
+        dicts['icd9'],
+        'ICD-9',
+        'SEPSIS CODES'
+    )
+    
+    # Verify organ dysfunction codes by system
+    for system, codes in ORGAN_DYSFUNCTION_ICD10.items():
+        results[f'organ_{system}'] = verify_icd_codes(
+            codes,
+            dicts['icd10'],
+            'ICD-10',
+            f'ORGAN DYSFUNCTION - {system.upper()}'
+        )
+    
+    # Overall summary
+    print("\n" + "="*80)
+    print("OVERALL SUMMARY")
+    print("="*80)
+    
+    total_codes = sum(len(df) for df in results.values())
+    total_found = sum(df['found'].sum() for df in results.values())
+    
+    print(f"Total codes checked: {total_codes}")
+    print(f"Total codes found: {total_found}")
+    print(f"Total codes missing: {total_codes - total_found}")
+    
+    if total_found == total_codes:
+        print("\n✓ ALL CODES VERIFIED SUCCESSFULLY!")
+    else:
+        print(f"\n⚠️  WARNING: {total_codes - total_found} codes not found")
+        print("Missing codes may need to be:")
+        print("  1. Corrected (typo in code)")
+        print("  2. Updated (different in MIMIC-IV)")
+        print("  3. Removed (not in MIMIC-IV)")
+    
+    return results
+
+
+# ============================================================================
+# USAGE EXAMPLE
+# ============================================================================
+
+if __name__ == "__main__":
+    # Update this path to your MIMIC-IV data directory
+    # Path to your MIMIC-IV data
+    from config import DATA_DIR
+    MIMIC_DATA_DIR = str(DATA_DIR)
+        
+    results = verify_all_codes(MIMIC_DATA_DIR)
+    
+    # Optional: Save results to CSV
+    # for name, df in results.items():
+    #     df.to_csv(f'icd_verification_{name}.csv', index=False)
