@@ -30,7 +30,7 @@ from utils import identify_sepsis_detailed
 # ============================================================================
 from config import *
 
-OUTPUT_DIR = EDA_DIR / f"medication_analysis_v{CLEANED_VERSION}"
+OUTPUT_DIR = EDA_DIR / f"sepsis"
 FIGURES_DIR = OUTPUT_DIR / 'figures'
 CACHE_DIR = OUTPUT_DIR / 'cache'
 

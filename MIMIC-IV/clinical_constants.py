@@ -69,3 +69,13 @@ IV_FLUIDS = {
         'dextran': ['dextran'],
     }
 }
+
+# Steroids
+STEROIDS = {
+    'hydrocortisone': ['hydrocortisone', 'cortef', 'solu-cortef'],
+    'methylprednisolone': ['methylprednisolone', 'solu-medrol', 'medrol'],
+    'dexamethasone': ['dexamethasone', 'decadron'],
+    'prednisone': ['prednisone', 'deltasone'],
+    'prednisolone': ['prednisolone'],
+    'fludrocortisone': ['fludrocortisone', 'florinef'],
+}

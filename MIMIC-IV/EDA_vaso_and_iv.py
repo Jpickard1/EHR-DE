@@ -23,14 +23,14 @@ from scipy import stats
 warnings.filterwarnings('ignore')
 
 from clinical_constants import VASOPRESSORS, IV_FLUIDS
-from utils import identify_sepsis_bool
+from utils import identify_sepsis_bool, load_patient_files
 
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
 from config import *
 
-OUTPUT_DIR = EDA_DIR / f"medication_analysis_v{CLEANED_VERSION}"
+OUTPUT_DIR = EDA_DIR / f"vaso_and_iv"
 FIGURES_DIR = OUTPUT_DIR / 'figures'
 CACHE_DIR = OUTPUT_DIR / 'cache'
 
@@ -619,20 +619,6 @@ class MedicationAnalyzer:
 # ============================================================================
 # MAIN SCRIPT
 # ============================================================================
-
-def load_patient_files(cleaned_dir: Path, sample_size: int = None) -> list:
-    """
-    Load all patient trajectory JSON files.
-    Optionally subsample for speed.
-    """
-    patient_files = sorted(cleaned_dir.glob("*.json"))
-    
-    if sample_size is not None and sample_size < len(patient_files):
-        np.random.seed(123)
-        patient_files = list(np.random.choice(patient_files, size=sample_size, replace=False))
-    
-    logger.info(f"Loading {len(patient_files):,} patient files")
-    return patient_files
 
 def to_serializable(obj):
     if isinstance(obj, (np.integer, np.int64)):

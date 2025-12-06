@@ -27,8 +27,8 @@ def load_patient_files(cleaned_dir: Path, sample_size: int = None, logger=None) 
     if sample_size is not None and sample_size < len(patient_files):
         np.random.seed(123)
         patient_files = list(np.random.choice(patient_files, size=sample_size, replace=False))
-    
-    logger.info(f"Loading {len(patient_files):,} patient files")
+    if logger is not None:
+        logger.info(f"Loading {len(patient_files):,} patient files")
     return patient_files
 
 def identify_sepsis_bool(patient_data: dict) -> bool:
