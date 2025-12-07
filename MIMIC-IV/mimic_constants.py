@@ -442,13 +442,12 @@ def find_alternative_itemids(icu_items: pd.DataFrame,
     
     return all_results
 
-
 def example_verification():
     """Example of how to verify itemIDs."""
     
     # Path to your MIMIC-IV data
     from config import DATA_DIR
-    mimic_data_dir = str(DATA_DIR) # '/ewsc/jpickard/physionet/mimiciv/physionet.org/files/mimiciv/3.1'
+    mimic_data_dir = str(DATA_DIR)
     
     print("="*80)
     print("MIMIC-IV ITEMID VERIFICATION TOOL")

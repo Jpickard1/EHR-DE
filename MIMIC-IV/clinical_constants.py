@@ -4,38 +4,103 @@
 
 # Sepsis ICD-10 codes (comprehensive list)
 SEPSIS_ICD10_CODES = {
-    # Sepsis
-    'A40', 'A400', 'A401', 'A403', 'A408', 'A409',  # Streptococcal sepsis
-    'A41', 'A410', 'A411', 'A412', 'A413', 'A414', 'A415', 'A4150', 'A4151', 'A4152', 'A4153', 'A4159',
-    'A418', 'A4181', 'A4189', 'A419',  # Other sepsis
-    
-    # Severe sepsis
-    'R6520', 'R6521',  # Severe sepsis without/with septic shock
-    
-    # Septic shock
-    'R6521', 'T8111', 'T8112',  # Septic shock, postprocedural septic shock
-    
-    # Bacteremia
-    'A499', 'R780', 'R7881',  # Bacterial infection/bacteremia
+    'A40',      # Streptococcal sepsis
+    'A400',     # Sepsis due to streptococcus, group A
+    'A401',     # Sepsis due to streptococcus, group B
+    'A403',     # Sepsis due to Streptococcus pneumoniae
+    'A408',     # Other streptococcal sepsis
+    'A409',     # Streptococcal sepsis, unspecified
+    'A41',      # Other sepsis
+    'A410',     # Sepsis due to Staphylococcus aureus
+    'A411',     # Sepsis due to other specified staphylococcus
+    'A412',     # Sepsis due to unspecified staphylococcus
+    'A413',     # Sepsis due to Hemophilus influenzae
+    'A414',     # Sepsis due to anaerobes
+    'A415',     # Sepsis due to other Gram-negative organisms
+    'A4150',    # Gram-negative sepsis, unspecified
+    'A4151',    # Sepsis due to Escherichia coli [E. coli]
+    'A4152',    # Sepsis due to Pseudomonas
+    'A4153',    # Sepsis due to Serratia
+    'A4159',    # Other Gram-negative sepsis
+    'A418',     # Other specified sepsis
+    'A4181',    # Sepsis due to Enterococcus
+    'A4189',    # Other specified sepsis
+    'A419',     # Sepsis, unspecified organism
+    'A499',     # Bacterial infection, unspecified
+    'R6520',    # Severe sepsis without septic shock
+    'R6521',    # Severe sepsis with septic shock
+    'R7881',    # Bacteremia
+    'T8111',    # Postprocedural cardiogenic shock
+    'T8112'     # Postprocedural septic shock
 }
 
 # Sepsis ICD-9 codes (for legacy data)
 SEPSIS_ICD9_CODES = {
-    '038', '0380', '0381', '03810', '03811', '03812', '03819',
-    '0382', '0383', '0384', '03840', '03841', '03842', '03843', '03844', '03849',
-    '0388', '0389',  # Septicemia
-    '99591', '99592',  # Sepsis, severe sepsis
-    '78552',  # Septic shock
+    '0380',     # Streptococcal septicemia
+    '03810',    # Staphylococcal septicemia, unspecified
+    '03811',    # Methicillin susceptible Staphylococcus aureus septicemia
+    '03812',    # Methicillin resistant Staphylococcus aureus septicemia
+    '03819',    # Other staphylococcal septicemia
+    '0382',     # Pneumococcal septicemia [Streptococcus pneumoniae septicemia]
+    '0383',     # Septicemia due to anaerobes
+    '03840',    # Septicemia due to gram-negative organism, unspecified
+    '03841',    # Septicemia due to hemophilus influenzae [H. influenzae]
+    '03842',    # Septicemia due to escherichia coli [E. coli]
+    '03843',    # Septicemia due to pseudomonas
+    '03844',    # Septicemia due to serratia
+    '03849',    # Other septicemia due to gram-negative organisms
+    '0388',     # Other specified septicemias
+    '0389',     # Unspecified septicemia
+    '78552',    # Septic shock
+    '99591',    # Sepsis
+    '99592',    # Severe sepsis
 }
 
 # Organ dysfunction indicators (for Sepsis-3 criteria)
 ORGAN_DYSFUNCTION_ICD10 = {
-    'respiratory': {'J80', 'J96', 'J9600', 'J9601', 'J9602', 'J9690', 'J9691', 'J9692'},
-    'cardiovascular': {'I95', 'I959', 'R6521'},  # Shock
-    'renal': {'N17', 'N170', 'N171', 'N172', 'N178', 'N179'},  # AKI
-    'hepatic': {'K72', 'K7200', 'K7201', 'K7210', 'K7211', 'K7290', 'K7291'},
-    'coagulation': {'D65', 'D688', 'D689'},  # DIC
-    'neurological': {'G93', 'G931', 'R402', 'R404'},
+    'respiratory': {
+        'J80',      # Acute respiratory distress syndrome
+        'J96',      # Respiratory failure, not elsewhere classified
+        'J9600',    # Acute respiratory failure, unspecified whether with hypoxia or hypercapnia
+        'J9601',    # Acute respiratory failure with hypoxia
+        'J9602',    # Acute respiratory failure with hypercapnia
+        'J9690',    # Respiratory failure, unspecified, unspecified whether with hypoxia or hypercapnia
+        'J9691',    # Respiratory failure, unspecified with hypoxia
+        'J9692',    # Respiratory failure, unspecified with hypercapnia'
+    },
+    'cardiovascular': {
+        # TODO: check if these count as organi dysfunction codes
+        'I95',      # Hypotension
+        'I959',     # Hypotension, unspecified
+    },
+    'renal': {
+        'N17',      # Acute kidney failure
+        'N170',     # Acute kidney failure with tubular necrosis
+        'N171',     # Acute kidney failure with acute cortical necrosis
+        'N172',     # Acute kidney failure with medullary necrosis
+        'N178',     # Other acute kidney failure
+        'N179'      # Acute kidney failure, unspecified
+    },
+    'hepatic': {
+        'K72',      # Hepatic failure, not elsewhere classified
+        'K7200',    # Acute and subacute hepatic failure without coma
+        'K7201',    # Acute and subacute hepatic failure with coma
+        'K7210',    # Chronic hepatic failure without coma
+        'K7211',    # Chronic hepatic failure with coma
+        'K7290',    # Hepatic failure, unspecified without coma
+        'K7291'     # Hepatic failure, unspecified with coma
+    },
+    'coagulation': {
+        'D65',      # Disseminated intravascular coagulation [defibrination syndrome]
+        'D688',     # Other specified coagulation defects
+        'D689'      # Coagulation defect, unspecified
+    },
+    'neurological': {
+        'G93',      # Other disorders of brain
+        'G931',     # Anoxic brain damage, not elsewhere classified
+        'R402',     # Coma
+        'R404'      # Transient alteration of awareness
+    },
 }
 
 
@@ -81,18 +146,6 @@ STEROIDS = {
 }
 
 
-"""
-Minimal ICD Code Verification for MIMIC-IV
-Verifies that ICD codes match their expected descriptions
-"""
-
-import pandas as pd
-from pathlib import Path
-from typing import Dict, Set, List
-
-
-
-#!/usr/bin/env python3
 """
 Minimal ICD Code Verification for MIMIC-IV
 Verifies that ICD codes match their expected descriptions
