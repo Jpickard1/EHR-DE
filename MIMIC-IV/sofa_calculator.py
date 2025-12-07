@@ -33,7 +33,8 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 import logging
-from mimic_constants import ITEMID_MAP
+from mimic_constants import ITEMID_MAP, get_weight_kg
+from clinical_constants import VASOPRESSORS
 
 logger = logging.getLogger(__name__)
 
@@ -381,6 +382,10 @@ def extract_vital_signs(df: pd.DataFrame, time_window: str = '6H') -> pd.DataFra
             elif measure_name in ['gcs_total', 'gcs_eye', 'gcs_verbal', 'gcs_motor']:
                 # For GCS, take minimum (worst)
                 grouped = measure_df.groupby(pd.Grouper(key='event_time', freq=time_window))['valuenum'].min()
+            elif measure_name in ['weight']:
+                _, measure_df = get_weight_kg(measure_df)
+                grouped = measure_df.groupby(pd.Grouper(key='event_time', freq=time_window))['valuenum'].last()
+                grouped = grouped.ffill().bfill()
             else:
                 # For labs, take last value in window
                 grouped = measure_df.groupby(pd.Grouper(key='event_time', freq=time_window))['valuenum'].last()
@@ -457,9 +462,29 @@ def extract_vasopressor_doses(df: pd.DataFrame, current_time: pd.Timestamp) -> D
 
     Returns doses in μg/kg/min for SOFA scoring.
     """
+    # Determine the patients weight
+    
+
     # This is a simplified version - would need patient weight and rate conversions
     # For now, return empty dict (indicating no vasopressors detected)
     return {}
+
+def classify_vasopressor(drug_name: str) -> tuple:
+    """
+    Classify a drug as a vasopressor.
+    Returns: (is_vasopressor: bool, vasopressor_type: str or None)
+    """
+    if not drug_name or not isinstance(drug_name, str):
+        return False, None
+    
+    drug_lower = drug_name.lower().strip()
+    
+    for vaso_type, keywords in VASOPRESSORS.items():
+        for keyword in keywords:
+            if keyword in drug_lower:
+                return True, vaso_type
+    
+    return False, None
 
 
 # ============================================================================

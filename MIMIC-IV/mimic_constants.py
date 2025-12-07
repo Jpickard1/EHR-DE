@@ -76,6 +76,11 @@ ITEMID_MAP = {
     'bilirubin': [50885],     # Bilirubin, Total [LAB]
     'creatinine': [50912],    # Creatinine [LAB]
     'platelets': [51265],     # Platelet Count [LAB]
+    'weight': [
+        226512,     # Admission Weight (Kg) [BOTH]
+        226531,     # Admission Weight (lbs.) [BOTH]
+        224639,     # Daily Weight [BOTH]
+    ],
     
     # Urine output (ICU output events)
     'urine_output': [
@@ -88,13 +93,52 @@ ITEMID_MAP = {
     ],
 }
 
-
 # ============================================================================
-# ITEMID VERIFICATION FUNCTIONS
+# HELPER METHODS
 # ============================================================================
 import pandas as pd
 from typing import Dict, List, Tuple, Optional
 import logging
+
+def get_weight_kg(measure_df):
+    weight_kg = []
+    for idx, row in measure_df.iterrows():
+        itemid = row["itemid"]
+        value = row["valuenum"]
+        uom = str(row.get("valueuom", "")).lower().strip()
+
+        # Admission Weight (Kg)
+        if itemid == 226512:
+            print("A")
+            weight_kg.append(value)
+
+        # Admission Weight (lbs)
+        elif itemid == 226531:
+            print("B")
+            weight_kg.append(value * 0.45359237)
+
+        # Daily Weight (varies)
+        elif itemid == 224639:
+            if "kg" in uom:
+                print("C")
+                weight_kg.append(value)
+            elif "lb" in uom:
+                print("D")
+                weight_kg.append(value * 0.45359237)
+            else:
+                print("E")
+                weight_kg.append(None)
+
+        else:
+            print("F")
+            weight_kg.append(None)
+
+    measure_df['weight_kg'] = weight_kg
+    return weight_kg, measure_df
+
+# ============================================================================
+# ITEMID VERIFICATION FUNCTIONS
+# ============================================================================
 
 def load_mimic_dictionaries(mimic_data_dir: str) -> Dict[str, pd.DataFrame]:
     """
