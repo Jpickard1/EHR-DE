@@ -1,8 +1,20 @@
 """
 SOFA and qSOFA Score Calculator for MIMIC-IV
 =============================================
-Computes Sequential Organ Failure Assessment (SOFA) and quick SOFA (qSOFA) 
+Computes Sepsis-related Failure Assessment (SOFA) and quick SOFA (qSOFA) 
 scores at each time point from patient trajectory data.
+
+Sepsis-related Organ Failure Assesment
+--------------------------------------
+The SOFA (Sequential Organ Failure Assessment) score is used to track the
+extent of a patient's organ dysfunction over time in an intensive care unit
+(ICU) setting, helping predict mortality risk based on six organ systems. The
+qSOFA (quick SOFA) score is a simpler bedside prompt that uses three clinical
+criteria (respiratory rate, blood pressure, and mental status) to rapidly
+identify patients with suspected infection outside the ICU who are at a higher
+risk of poor outcomes.
+
+See Vincent et al, 1996: https://github.com/Jpickard1/EHR-DE/blob/main/docs/references/41786868.pdf
 
 IMPORTANT NOTES FOR MIMIC-IV v3.1:
 ----------------------------------
@@ -90,11 +102,15 @@ def sofa_respiratory(pao2_fio2: Optional[float],
     3: PaO2/FiO2 < 200 with ventilation
     4: PaO2/FiO2 < 100 with ventilation
     
+    # TODO: mechanical ventilation is not currently checked for
+
     Uses SpO2/FiO2 as surrogate if PaO2/FiO2 unavailable.
     """
     ratio = pao2_fio2
     
     # Use SpO2/FiO2 if PaO2/FiO2 unavailable (Rice et al. 2007 conversion)
+    #   Comparison of the Spo2/Fio2 Ratio and the Pao2/Fio2 Ratio in Patients With Acute Lung Injury or ARDS
+    #   TODO: verify these conversions between Spo2/Fio2 to Pao2/Fio2
     if ratio is None and spo2_fio2 is not None:
         # Approximate conversion: SpO2/FiO2 <= 235 ~ PaO2/FiO2 <= 200
         if spo2_fio2 >= 512:
@@ -303,6 +319,8 @@ def qsofa_score(respiratory_rate: Optional[float],
     - Systolic BP <= 100 mmHg
     
     Score >= 2 suggests high risk for poor outcomes.
+
+    See: https://www.mdcalc.com/calc/2654/qsofa-quick-sofa-score-sepsis
     """
     score = 0
     
@@ -435,6 +453,8 @@ def extract_vasopressor_doses(df: pd.DataFrame, current_time: pd.Timestamp) -> D
     """
     Extract vasopressor doses at current timepoint.
     
+    TODO: need to implement this function
+
     Returns doses in μg/kg/min for SOFA scoring.
     """
     # This is a simplified version - would need patient weight and rate conversions
@@ -501,7 +521,8 @@ def calculate_sofa_qsofa_scores(patient_df: pd.DataFrame,
         # Get 24-hour urine output
         urine_24h = calculate_24h_urine_output(patient_df, current_time)
         
-        # Get vasopressor doses (simplified - would need more processing)
+        # TODO: this does not work
+        # Get vasopressor doses
         vasopressor_doses = extract_vasopressor_doses(patient_df, current_time)
         
         # Calculate qSOFA

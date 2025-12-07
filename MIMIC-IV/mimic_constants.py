@@ -38,47 +38,54 @@ Key Concept:
 # Updated for MIMIC-IV v3.1 - removed outdated itemIDs from MIMIC-III
 ITEMID_MAP = {
     # Respiratory rate (ICU)
-    'respiratory_rate': [220045, 220210, 224688, 224689, 224690],
-    # Note: 220045 is actually Heart Rate but often co-occurs with RR
-    # 224688 = Respiratory Rate (Set) - ventilator setting
-    # 224689 = Respiratory Rate (spontaneous)
-    # 224690 = Respiratory Rate (Total)
+    'respiratory_rate': [
+        220045,     # Heart Rate [ICU]
+        220210,     # Respiratory Rate [ICU]
+        224688,     # Respiratory Rate (Set) [ICU]
+        224689,     # Respiratory Rate (spontaneous) [ICU]
+        224690      # Respiratory Rate (Total) [ICU]
+    ],
     
     # Mean arterial pressure (ICU)
-    'map': [220052, 220181, 225312],
-    # 220052 = Arterial Blood Pressure mean (invasive)
-    # 220181 = Non Invasive Blood Pressure mean
-    # 225312 = ART BP Mean
+    'map': [
+        220052,     # Arterial Blood Pressure mean [ICU]
+        220181,     # Non Invasive Blood Pressure mean [ICU]
+        225312      # ART BP Mean [ICU]
+    ],
     
     # Systolic blood pressure (ICU)
-    'sbp': [220050, 220179],
-    # 220050 = Arterial Blood Pressure systolic (invasive)
-    # 220179 = Non Invasive Blood Pressure systolic
+    'sbp': [
+        220050,     # Arterial Blood Pressure systolic [ICU]
+        220179      # Non Invasive Blood Pressure systolic [ICU]
+    ],
     
     # Glasgow Coma Scale components (ICU)
-    'gcs_eye': [220739],      # GCS - Eye Opening
-    'gcs_verbal': [223900],   # GCS - Verbal Response
-    'gcs_motor': [223901],    # GCS - Motor Response
-    'gcs_total': [198],       # GCS Total (if available, otherwise sum components)
+    'gcs_eye': [220739],      # GCS - Eye Opening [ICU]
+    'gcs_verbal': [223900],   # GCS - Verbal Response [ICU]
+    'gcs_motor': [223901],    # GCS - Motor Response [ICU]
     
     # Oxygen measurements (ICU)
-    'fio2': [223835],         # Inspired O2 Fraction
-    'pao2': [220224],         # Arterial O2 pressure (from ABG)
-    'spo2': [220277, 220227], # O2 saturation pulseoxymetry, Arterial O2 Saturation
+    'fio2': [223835],         # Inspired O2 Fraction [ICU]
+    'pao2': [220224],         # Arterial O2 pressure [ICU]
+    'spo2': [
+        220277,               # O2 saturation pulseoxymetry [ICU]
+        220227                # Arterial O2 Saturation [ICU]
+    ],
     
     # Laboratory values (from d_labitems - these are 5-digit codes)
-    'bilirubin': [50885],     # Bilirubin, Total (mg/dL)
-    'creatinine': [50912],    # Creatinine (mg/dL)
-    'platelets': [51265],     # Platelet Count (K/uL)
+    'bilirubin': [50885],     # Bilirubin, Total [LAB]
+    'creatinine': [50912],    # Creatinine [LAB]
+    'platelets': [51265],     # Platelet Count [LAB]
     
     # Urine output (ICU output events)
-    'urine_output': [226559, 226560, 226561, 226563, 226564, 226584],
-    # 226559 = Foley
-    # 226560 = Void
-    # 226561 = Condom Cath
-    # 226563 = Suprapubic
-    # 226564 = R Nephrostomy
-    # 226584 = Ileoconduit
+    'urine_output': [
+        226559,     # Foley [ICU]
+        226560,     # Void [ICU]
+        226561,     # Condom Cath [ICU]
+        226563,     # Suprapubic [ICU]
+        226564,     # R Nephrostomy [ICU]
+        226584      # Ileoconduit
+    ],
 }
 
 
